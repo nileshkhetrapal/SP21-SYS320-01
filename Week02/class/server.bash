@@ -6,15 +6,30 @@
 
 
 
+if [[ -f "$wg0.conf" ]]
+then
+echo -n "The file already exists, do you want to overwrite it? Y|N"
+read to_overwrite
+
+if [[ "${to_overwrite}" == "N" || "${to_overwrite}" == "n" ]]
+then
+echo "Exiting....."
+exit 0
+
+elif [[ "${to_overwrite}" == "Y" || "${to_overwrite}" == "y" ]]
+then
+echo "creating file..."
+fi
+fi
 #Create private key
 
-p="$(wg genkey)"
+p="$(wg_genkey)"
 
 
 
 #create public key
 
-pub="$(echo ${p} | wg pubkey)"
+pub="$(echo ${p} | wg_pubkey)"
 
 
 
