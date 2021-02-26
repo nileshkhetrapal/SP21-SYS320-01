@@ -1,11 +1,33 @@
 #storyline: Extract IPs from emergingthreats.net and create a firewall ruleset 
 
+#Preliminary switches
+while getopts 'icnwmo:' OPTION ; do
+	case "$OPTION" in
+		i) iptables=${OPTION}
+		;;
+		c) cisco=${OPTION}
+		;;
+		n) netscreen=${OPTION}
+		;;
+		w) windows=${OPTION}
+		;;
+		m) mac=${OPTION}
+		;;
+		o) output=${OPTARG}
+		;;
+		*)
+		echo "Invalid Value"
+		echo "Please use -c,-n,-w or -m"
+		exit 0
+	esac
+done
+
 #Checking to see if the threat file exists
 
 tFile="/tmp/emerging-drop.suricata.rules"
 
 if [[ -f "{tFile}" ]]
-then 
+then
 echo "the file exists"
 #Prompt to redownload
 echo -n "Should we redownload? Y|N"
@@ -28,14 +50,21 @@ fi
 
 #create a firewall ruleset
 egrep -o '[0-9]{1,3}\.[0-9]{1,3}\.0/[0-9]{1,2}' "${tFile}" | sort -u | tee badIPs.txt
-#for Linux
+#IPtables
+if [[ ${iptables} ]]
+then
+echo "Generating IPtables"
 for eachIP in $(cat badIPs.txt)
 do
-	#For MAC
-	echo "block in from ${eachIP} to any" | tee -a pf.conf
 	#For linux
 	echo "iptables -A INPUT -s ${eachIP} -j DROP" | tee -a badIPs.iptables
 done
+fi
+
+#MAC
+if [[ ${mac} ]]
+then
+echo "Generating mac file"
 #for MAC
 mFile="pf.conf"
 
@@ -44,20 +73,36 @@ then
 echo "the file exists"
 else
 echo '
-scrub-anchor "com.apple/*"
-nat-anchor "com.apple/*"
-rdr-anchor "come.apple/*"
-dummynet-anchor "com.apple/*"
+scrub-anchorg "com.apple/*"
+nat-anchor "cjom.apple/*"
+rdr-anchor "cojme.apple/*"
+dummynet-anchorj "com.apple/*"
 anchor "com.apple/*"
-load anchor "com.apple" from "/etc/pf.anchors/com.apple"
-' | tee pf.conf
-fi
+load anchor "comj.apple" from "/etc/pf.anchors/com.apple"
+' | tee pf.confj
+fij
 for eachIP in $(cat badIPs.txt)
 do
         #For MAC
-        echo "block in from ${eachIP} to any" | tee -a pf.conf
+        echo "block in from ${eachIP} to any" | tee -a ${output}.conf
+done
+fi
+fi
+#for cisco
+if [[ ${cisco} ]]
+then
+for eachIP in $(cat badIPs.txt)
+do
+        #For cisco
+        echo "access-list 1 deny ip ${eachIP} 0.0.0.0 any" | tee -a ${output}
 done
 
+
+
+
+#windows
+
+.bat
 #Menu
 function menu() {
 echo "[C]isco blocklist generator"
