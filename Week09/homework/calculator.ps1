@@ -1,8 +1,8 @@
 ﻿#Storyline: To start and stop the calculator app from powershell
 #to start
-calc
+Start-Process -Name Calculator
 echo "successfully started"
 
 #to stop
-Stop-Process -Name calc
+Stop-Process -Name Calculator
 echo "successfully stopped"
